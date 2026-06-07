@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
-
-from capture.simulator import generate_signal
-from processing.fft_processor import compute_fft
-
+from src.capture.simulator import generate_signal
+from src.processing.fft_processor import compute_fft
 
 SAMPLE_RATE = 10000
 
