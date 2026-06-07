@@ -6,7 +6,7 @@ from src.processing.fft_processor import compute_fft
 SAMPLE_RATE = 10000
 
 samples = generate_signal(
-    frequency=1000,
+    frequencies=[1000],
     sample_rate=SAMPLE_RATE,
     duration=1
 )
