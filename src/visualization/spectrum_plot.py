@@ -18,8 +18,15 @@ freqs, mags = compute_fft(
     SAMPLE_RATE
 )
 
+peak_index = mags.argmax()
+peak_freq = freqs[peak_index]
+
+print(f"Strongest frequency: {peak_freq:.2f} Hz")
+
 plt.figure(figsize=(10, 5))
 plt.plot(freqs, mags)
+
+plt.axvline(peak_freq)
 
 plt.title("WaveDecode Spectrum")
 plt.xlabel("Frequency (Hz)")
