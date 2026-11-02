@@ -21,8 +21,8 @@ def compute_fft(samples, sample_rate: float, window: str = "hann"):
     data = np.asarray(samples)
     if data.ndim != 1:
         raise ValueError("samples must be a one-dimensional array")
-    if data.size < 2:
-        raise ValueError("At least two IQ samples are required")
+    if data.size < 3:
+        raise ValueError("At least three IQ samples are required for windowed FFT analysis")
     if not np.isfinite(sample_rate) or sample_rate <= 0:
         raise ValueError("sample_rate must be positive and finite")
     if not np.all(np.isfinite(data)):

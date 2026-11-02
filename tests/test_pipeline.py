@@ -34,6 +34,11 @@ def test_simulator_rejects_invalid_configuration(kwargs):
         generate_signal(**kwargs)
 
 
+def test_fft_rejects_too_few_samples_for_windowing():
+    with pytest.raises(ValueError, match="At least three IQ samples"):
+        compute_fft(np.array([1 + 0j, 0 + 1j]), sample_rate=8_000)
+
+
 def test_fft_finds_bin_centred_complex_tone():
     sample_rate = 8_000
     samples = generate_signal([1_000], sample_rate=sample_rate, duration=1.0)
