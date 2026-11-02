@@ -1,9 +1,1 @@
-"""
-WaveDecode Capture Package
-
-Handles signal acquisition from different sources:
-
-- Simulated signals
-- SDR devices
-- Recorded IQ files
-"""
+"""IQ sample acquisition from simulators, files, and optional SDR hardware."""
