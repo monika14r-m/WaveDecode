@@ -106,3 +106,27 @@ def test_exporter_creates_parent_directory_and_valid_json(tmp_path):
     path = export_analysis({"frequency": np.float64(1_000.0)}, destination)
     payload = json.loads(path.read_text(encoding="utf-8"))
     assert payload["frequency"] == 1_000.0
+
+
+def test_iq_loader_reads_only_requested_interleaved_samples(tmp_path):
+    path = tmp_path / "large-interleaved.iq"
+    np.array([10, 20, 30, 40, 50, 60], dtype=np.int8).tofile(path)
+    samples = load_iq_file(path, dtype="int8", max_samples=2)
+    assert samples.shape == (2,)
+    assert samples[0].real == pytest.approx(10 / 128)
+    assert samples[1].imag == pytest.approx(40 / 128)
+
+
+def test_iq_loader_rejects_unaligned_complex_file(tmp_path):
+    path = tmp_path / "truncated.iq"
+    path.write_bytes(b"\\x00\\x00\\x00")
+    with pytest.raises(ValueError, match="not aligned"):
+        load_iq_file(path, dtype="complex64")
+
+
+@pytest.mark.parametrize("limit", [0, -1, True, 1.5])
+def test_iq_loader_rejects_invalid_sample_limit(tmp_path, limit):
+    path = tmp_path / "samples.iq"
+    np.array([1 + 1j], dtype=np.complex64).tofile(path)
+    with pytest.raises(ValueError, match="positive integer"):
+        load_iq_file(path, max_samples=limit)
