@@ -73,11 +73,12 @@ def test_configures_device_reads_requested_samples_and_closes(monkeypatch):
 
 
 def test_closes_device_when_capture_fails(monkeypatch):
-    class FakeSdr:
-        closed = False
+    created = []
 
+    class FakeSdr:
         def __init__(self, device_index):
-            pass
+            self.closed = False
+            created.append(self)
 
         def read_samples(self, count):
             raise OSError("device disconnected")
@@ -92,4 +93,4 @@ def test_closes_device_when_capture_fails(monkeypatch):
     with pytest.raises(OSError, match="device disconnected"):
         capture_samples(center_frequency=100e6, num_samples=4)
 
-    assert FakeSdr.closed is True
+    assert created[0].closed is True
