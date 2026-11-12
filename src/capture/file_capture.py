@@ -18,6 +18,8 @@ def load_iq_file(path, dtype: str = "complex64", max_samples: int | None = None)
 
     max_samples limits the number of complex samples read from disk, not merely
     the returned array size. This bounds memory use for large recordings.
+    Interleaved scalar formats must contain complete I/Q pairs across the whole
+    file, including any tail beyond the requested sample limit.
     """
     file_path = Path(path).expanduser()
     if not file_path.is_file():
@@ -35,7 +37,12 @@ def load_iq_file(path, dtype: str = "complex64", max_samples: int | None = None)
         raise ValueError(f"IQ file size is not aligned to the selected {dtype} format")
 
     # Interleaved formats store two scalar values for each complex sample.
+    # Validate the entire file before applying max_samples so a malformed tail
+    # cannot be silently hidden by a bounded read.
     values_per_sample = 1 if dtype in {"complex64", "complex128"} else 2
+    if values_per_sample == 2 and (file_size // item_dtype.itemsize) % 2:
+        raise ValueError("Interleaved IQ file must contain an even number of I/Q values")
+
     count = -1 if max_samples is None else max_samples * values_per_sample
     raw = np.fromfile(file_path, dtype=item_dtype, count=count)
     if raw.size == 0:
